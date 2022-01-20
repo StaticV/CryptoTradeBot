@@ -12,6 +12,7 @@ import CryptoExchange.Exchange;
 import CryptoExchange.ExchangeException;
 import CryptoExchange.KrakenExchange;
 import CryptoExchange.Ledger;
+import CryptoExchange.LedgerItem;
 
 
 public class CryptoTrader {
@@ -28,7 +29,9 @@ public class CryptoTrader {
 				p.load(new FileReader(arg));
 				CryptoTrader ct = new CryptoTrader(p);
 				
-				System.out.println(new Date()+" Last Trade: "+ct.l.last+" Average "+ct.l.avgPrice(ct.l.items.get(0).pair.asset));
+				String coin = ct.l.items.get(0).pair.asset;
+				LedgerItem last = ct.l.lastTrade(coin);
+				System.out.println(new Date()+" Last Trade: "+last.time+" $"+last.price()+" Average $"+ct.l.avgPrice(coin));
 				System.gc();
 			} catch(Exception e) {
 				e.printStackTrace();
