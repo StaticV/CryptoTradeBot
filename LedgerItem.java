@@ -1,10 +1,14 @@
 package CryptoExchange;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 
 
-public class LedgerItem {
+public class LedgerItem implements Serializable {
+	
+	public static final long serialVersionUID = 1;
 
 	public String refid,type,subtype,aclass,asset;
 	public Date time;
@@ -22,5 +26,13 @@ public class LedgerItem {
 		fee = Json.getBigDecimal(jo,"fee");
 		balance = Json.getBigDecimal(jo,"balance");
 		pair = null;
+	}
+	
+	public LedgerItem() {
+		time = new Date(0);
+	}
+	
+	public BigDecimal price() {
+		return amount.divide(pair.amount,RoundingMode.HALF_EVEN).abs();
 	}
 }

@@ -1,25 +1,33 @@
 package CryptoExchange;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 
-public class Ledger {
+public class Ledger implements Serializable {
 	
 	public static final int ipg = 50;
+	public static final long serialVersionUID = 1;
 
-	protected ArrayList<LedgerItem> items;
+	public ArrayList<LedgerItem> items;
+	protected File f;
 	public Date last;
 	
-	public Ledger(int capacity) {
+	protected Ledger(int capacity) {
 		items = new ArrayList<LedgerItem>(capacity);
 		last = new Date(0);
 	}
 	
-	public Ledger(Iterator<Object> it) {
+	protected Ledger(Iterator<Object> it) {
 		this(ipg);
 		
 		while (it.hasNext()) {
@@ -33,8 +41,10 @@ public class Ledger {
 		this(Json.getJSONArray(json));
 	}
 	
-	public Ledger(Exchange ex, String type, String first,int pages) throws IOException, ExchangeException, InterruptedException {
+	public Ledger(Exchange ex, String type, String first,int pages,File f) throws IOException,ExchangeException,InterruptedException {
 		this(ipg*pages);
+		
+		this.f = f;
 		
 		for (int i = 0; i < pages; ++i) {
 			Ledger l = ex.getLedger(type,first,i*ipg);
@@ -44,37 +54,23 @@ public class Ledger {
 		}
 	}
 	
-	public Iterator<LedgerItem> iterator() {
-		return items.iterator();
-	}
-	
 	public void buildTrades(String asset) {
-		Iterator<LedgerItem> it = iterator();
-		
-		while(it.hasNext()) {
+		for (Iterator<LedgerItem> it = items.iterator();it.hasNext();) {
 			LedgerItem cur = it.next();
 			
-			if (cur.pair == null) {
-				Iterator<LedgerItem> nested = iterator();
-				
-				while (nested.hasNext()) {
-					LedgerItem curPair = nested.next();
-					
+			if (cur.pair == null)
+				for (LedgerItem curPair : items)
 					if (cur.refid.equals(curPair.refid) && !cur.asset.equals(curPair.asset)) {
 						cur.pair = curPair;
 						curPair.pair = cur;
 						break;
 					}
-				}
-			}
 			
 			if (!cur.asset.equals(asset)) it.remove();
 		}
 		
-		it = iterator();
-		while(it.hasNext()) {
+		for (Iterator<LedgerItem> it = items.iterator();it.hasNext();) {
 			LedgerItem cur = it.next();
-			
 			if (cur.pair == null) it.remove();
 		}
 		
@@ -85,16 +81,11 @@ public class Ledger {
 		BigDecimal result = new BigDecimal("0.00");
 		BigDecimal qty = new BigDecimal("0.00");
 		
-		Iterator<LedgerItem> it = iterator();
-		
-		while (it.hasNext()) {
-			LedgerItem cur = it.next();
-			
+		for (LedgerItem cur : items)
 			if (cur.pair.asset.equals(coin)) {
 				qty = qty.add(cur.pair.amount);
 				result = result.add(cur.amount);
 			}
-		}
 		
 		return result.divide(qty,RoundingMode.HALF_EVEN).abs();
 	}
@@ -105,7 +96,31 @@ public class Ledger {
 		return items.addAll(l.items);
 	}
 	
-	public void updateLedger(Exchange ex) throws IOException, ExchangeException, InterruptedException {
+	public void updateLedger(Exchange ex) throws IOException,ExchangeException,InterruptedException {
 		mergeLedgers(ex.getLedger("trade",String.valueOf(last.getTime()/1000),0));
+	}
+	
+	public LedgerItem lastTrade(String coin) {
+		LedgerItem result = new LedgerItem();
+		
+		for (LedgerItem cur : items)
+			if (cur.pair.asset.equals(coin) && cur.time.after(result.time))
+				result = cur;
+		
+		return result;
+	}
+	
+	public void writeToFile() throws IOException {
+		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(f));
+		out.writeObject(this);
+		out.close();
+	}
+	
+	public static Ledger readFromFile(File f) throws ClassNotFoundException,IOException {
+		ObjectInputStream in = new ObjectInputStream(new FileInputStream(f));
+		Ledger l = (Ledger)in.readObject();
+		in.close();
+		l.f = f;
+		return l;
 	}
 }

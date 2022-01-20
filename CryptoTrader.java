@@ -1,5 +1,6 @@
 package CryptoTrader;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -27,7 +28,7 @@ public class CryptoTrader {
 				p.load(new FileReader(arg));
 				CryptoTrader ct = new CryptoTrader(p);
 				
-				System.out.println(new Date()+" Last Trade: "+ct.l.last);
+				System.out.println(new Date()+" Last Trade: "+ct.l.last+" Average "+ct.l.avgPrice(ct.l.items.get(0).pair.asset));
 				System.gc();
 			} catch(Exception e) {
 				e.printStackTrace();
@@ -35,27 +36,46 @@ public class CryptoTrader {
 		}
 	}
 	
-	public CryptoTrader(Properties p) throws IOException, ExchangeException, InterruptedException  {
+	public CryptoTrader(Properties p) throws IOException, ExchangeException,InterruptedException,ClassNotFoundException  {
 		if (p.getProperty("exchange").equalsIgnoreCase("kraken"))
 			ex = new KrakenExchange(p.getProperty("apikey"),p.getProperty("privkey"));
 		
-		l = new Ledger(ex,"trade",p.getProperty("first"),Integer.parseInt(p.getProperty("pages","10")));
-		l.buildTrades(p.getProperty("currency"));
+		String currency = p.getProperty("currency");
+		
+		File f = new File(p.getProperty("ledger"),"ledger.txt");
+		if (f.exists()) {
+			l = Ledger.readFromFile(f);
+			l.updateLedger(ex);
+			l.buildTrades(currency);
+		}
+		else {
+			l = new Ledger(ex,"trade",p.getProperty("first"),Integer.parseInt(p.getProperty("pages","10")),f);
+			l.buildTrades(currency);
+			l.writeToFile();
+		}
 		
 		trackers = new ArrayList<Tracker>();
-		for (String coin : p.getProperty("coins").split(" ")) {
-			PriceWatcher pw;
-			pw = new LastPriceWatcher(
-					l,
-					ex,
-					Boolean.valueOf(p.getProperty("test","true")),
-					new BigDecimal(p.getProperty("maxratio","0.5")).min(BigDecimal.ONE),
-					new BigDecimal(p.getProperty("minratio","0.0026")), 
-					new BigDecimal(p.getProperty("traderatio","2")),
-					ex.getMinOrder(coin, p.getProperty("currency"))
-				);
-			
-			trackers.add(new OrderTracker(ex,coin,p.getProperty("currency"),l.avgPrice(coin),Integer.parseInt(p.getProperty("interval","60")) * 1000,true,pw));
-		}
+		for (String coin : p.getProperty("coins").split(" "))
+			trackers.add(
+					new OrderTracker(
+							ex,
+							coin,
+							currency,
+							l.lastTrade(coin).price(),
+							Integer.parseInt(p.getProperty("interval","60"))*1000,
+							true,
+							new LastPriceWatcher(
+									l,
+									ex,
+									Boolean.valueOf(p.getProperty("test","true")),
+									new BigDecimal(p.getProperty("maxratio","0.5")).min(BigDecimal.ONE),
+									new BigDecimal(p.getProperty("minratio","0.0026")), 
+									new BigDecimal(p.getProperty("traderatio","2")),
+									ex.getMinOrder(coin,currency),
+									coin,
+									currency
+							)
+					)
+			);
 	}
 }
