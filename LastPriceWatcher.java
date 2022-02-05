@@ -10,13 +10,13 @@ import CryptoExchange.Ledger;
 
 public class LastPriceWatcher extends PriceWatcher {
 	
-	
 	protected Ledger l;
 	protected Exchange ex;
 	protected Boolean test;
 	protected BigDecimal maxratio,traderatio,minratio,minOrder;
 	protected BigDecimal coinBal,currBal;
 	public String coin,curr;
+	
 	
 	public LastPriceWatcher(Ledger l,Exchange ex,Boolean test,BigDecimal maxratio,BigDecimal minratio, BigDecimal traderatio,BigDecimal minOrder,String coin,String curr) 
 			throws IOException,ExchangeException,InterruptedException {

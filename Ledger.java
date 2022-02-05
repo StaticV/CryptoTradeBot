@@ -22,6 +22,7 @@ public class Ledger implements Serializable {
 	protected File f;
 	public Date last;
 	
+	
 	protected Ledger(int capacity) {
 		items = new ArrayList<LedgerItem>(capacity);
 		last = new Date(0);
@@ -60,11 +61,7 @@ public class Ledger implements Serializable {
 			
 			if (cur.pair == null)
 				for (LedgerItem curPair : items)
-					if (cur.refid.equals(curPair.refid) && !cur.asset.equals(curPair.asset)) {
-						cur.pair = curPair;
-						curPair.pair = cur;
-						break;
-					}
+					if (cur.pair(curPair)) break;
 			
 			if (!cur.asset.equals(asset)) it.remove();
 		}

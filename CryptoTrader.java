@@ -72,7 +72,7 @@ public class CryptoTrader {
 									ex,
 									Boolean.valueOf(p.getProperty("test","true")),
 									new BigDecimal(p.getProperty("maxratio","0.5")).min(BigDecimal.ONE),
-									new BigDecimal(p.getProperty("minratio","0.0026")), 
+									new BigDecimal(p.getProperty("minratio","0.0026")),
 									new BigDecimal(p.getProperty("traderatio","2")),
 									ex.getMinOrder(coin,currency),
 									coin,

@@ -15,6 +15,7 @@ public class LedgerItem implements Serializable {
 	public BigDecimal amount,fee, balance;
 	public LedgerItem pair;
 	
+	
 	public LedgerItem(Object jo) {
 		refid = Json.getString(jo,"refid");
 		type = Json.getString(jo,"type");
@@ -34,5 +35,18 @@ public class LedgerItem implements Serializable {
 	
 	public BigDecimal price() {
 		return amount.divide(pair.amount,RoundingMode.HALF_EVEN).abs();
+	}
+	
+	public boolean arePair(LedgerItem l) {
+		return refid.equals(l.refid) && !asset.equals(l.asset);
+	}
+	
+	public boolean pair(LedgerItem l) {
+		if (arePair(l)) {
+			pair = l;
+			l.pair = this;
+			return true;
+		}
+		else return false;
 	}
 }

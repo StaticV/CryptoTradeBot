@@ -97,13 +97,13 @@ public class KrakenExchange implements Exchange {
 	}
 	
 	public Date getTime() throws IOException, ExchangeException, InterruptedException {
-		String[] keys = {JSONKey, "unixtime"};
+		String[] keys = {JSONKey,"unixtime"};
 		
 		return new Date(1000*Long.parseUnsignedLong(getJSONString(getData(pubUrl+"Time"),keys)));
 	}
 	
 	public String getPrices(String coin, String currency) throws IOException, ExchangeException, InterruptedException {
-		String[] keys = {JSONKey, coin+currency};
+		String[] keys = {JSONKey,coin+currency};
 		
 		return getJSONString(getData(pubUrl+"Ticker?pair="+coin+currency),keys);
 	}
