@@ -45,7 +45,7 @@ public class CryptoTrader {
 		
 		String currency = p.getProperty("currency");
 		
-		File f = new File(p.getProperty("ledger"),"ledger.txt");
+		File f = new File(p.getProperty("ledger"),"ledger.ser");
 		if (f.exists()) {
 			l = Ledger.readFromFile(f);
 			l.updateLedger(ex);
