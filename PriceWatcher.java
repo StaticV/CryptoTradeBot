@@ -12,17 +12,17 @@ public abstract class PriceWatcher {
 	public static final RoundingMode rm = RoundingMode.HALF_EVEN;
 
 	public BigDecimal coinUp(BigDecimal last,BigDecimal orderPrice,BigDecimal orderQty) throws IOException,ExchangeException,InterruptedException {
-		return processOrder(last,orderPrice,orderQty,-1,"sell","  UP  ");
+		return processOrder(last,orderPrice,orderQty,-1,false,"  UP  ");
 	}
 	
 	public BigDecimal coinDown(BigDecimal last,BigDecimal orderPrice,BigDecimal orderQty) throws IOException,ExchangeException,InterruptedException {
-		return processOrder(last,orderPrice,orderQty,1,"buy"," DOWN ");
+		return processOrder(last,orderPrice,orderQty,1,true," DOWN ");
 	}
 	
-	protected abstract BigDecimal processOrder(BigDecimal last,BigDecimal orderPrice,BigDecimal orderQty,int avggtlt,String type,String updown)
+	protected abstract BigDecimal processOrder(BigDecimal last,BigDecimal orderPrice,BigDecimal orderQty,int avggtlt,Boolean buy,String updown)
 			throws IOException,ExchangeException,InterruptedException;
 	
-	protected static BigDecimal priceDif(BigDecimal one, BigDecimal two) {
+	protected static BigDecimal priceDif(BigDecimal one,BigDecimal two) {
 		return one.max(two).divide(two.min(one),scale,rm).subtract(BigDecimal.ONE).setScale(scale,rm);
 	}
 }

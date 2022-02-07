@@ -18,7 +18,7 @@ public interface Exchange {
 	
 	public abstract BigDecimal getCoinBalance(String coin) throws IOException, ExchangeException, InterruptedException;
 	
-	public abstract String orderMarketPrice(String type,String coin, String currency, String qty, String validate) throws IOException, ExchangeException, InterruptedException;
+	public abstract String orderMarketPrice(Boolean buy,String coin, String currency, String qty, Boolean validate) throws IOException, ExchangeException, InterruptedException;
 	
 	public abstract String getTradeableAssetPair(String coin, String currency) throws IOException, ExchangeException, InterruptedException;
 	

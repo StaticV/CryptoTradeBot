@@ -136,8 +136,12 @@ public class KrakenExchange implements Exchange {
 		return new BigDecimal(getJSONSubString(getAccountBalance(),keys));
 	}
 	
-	public String orderMarketPrice(String type, String coin, String currency, String qty, String validate) throws IOException, ExchangeException, InterruptedException {
+	public String orderMarketPrice(Boolean buy,String coin,String currency,String qty,Boolean validate) throws IOException, ExchangeException, InterruptedException {
 		String[] keys = {JSONKey,"descr","order"};
+		
+		String type;
+		if (buy) type = "buy";
+		else type = "sell";
 		
 		return getJSONString(signedRequest(privUrl + "AddOrder","&ordertype=market&type="+type+"&volume="+qty+"&pair="+coin+currency+"&validate="+validate),keys);
 	}

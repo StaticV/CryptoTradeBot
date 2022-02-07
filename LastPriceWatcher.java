@@ -13,9 +13,8 @@ public class LastPriceWatcher extends PriceWatcher {
 	protected Ledger l;
 	protected Exchange ex;
 	protected Boolean test;
-	protected BigDecimal maxratio,traderatio,minratio,minOrder;
-	protected BigDecimal coinBal,currBal;
-	public String coin,curr;
+	protected BigDecimal maxratio,traderatio,minratio,minOrder,coinBal,currBal;
+	protected String coin,curr;
 	
 	
 	public LastPriceWatcher(Ledger l,Exchange ex,Boolean test,BigDecimal maxratio,BigDecimal minratio, BigDecimal traderatio,BigDecimal minOrder,String coin,String curr) 
@@ -37,7 +36,7 @@ public class LastPriceWatcher extends PriceWatcher {
 		currBal = ex.getCurrencyBalance(curr);
 	}
 	
-	protected BigDecimal processOrder(BigDecimal last,BigDecimal orderPrice,BigDecimal orderQty,int avggtlt,String type,String updown) 
+	protected BigDecimal processOrder(BigDecimal last,BigDecimal orderPrice,BigDecimal orderQty,int avggtlt,Boolean buy,String updown) 
 			throws IOException,ExchangeException,InterruptedException {
 		BigDecimal avg = l.avgPrice(coin);
 		
@@ -49,15 +48,16 @@ public class LastPriceWatcher extends PriceWatcher {
 			dif = priceDif(last.max(avg),orderPrice);
 			qty = coinBal.multiply(dif.multiply(traderatio).min(maxratio)).min(orderQty);
 		}
-		else { // DOWN
+		else if (avggtlt == 1) { // DOWN
 			dif = priceDif(last.min(avg),orderPrice);
 			qty = currBal.multiply(dif.multiply(traderatio).min(maxratio)).divide(orderPrice,scale,rm).min(orderQty);
-		}
+		} 
+		else return last;
 			
 		if (qty.compareTo(minOrder) == -1) return last;
 		
 		System.out.print(new Date() + updown + dif.floatValue()*100 + "% $" + orderPrice);
-		System.out.print(" " + ex.orderMarketPrice(type,coin,curr,qty.toPlainString(),test.toString()));
+		System.out.print(" " + ex.orderMarketPrice(buy,coin,curr,qty.toPlainString(),test));
 		
 		l.updateLedger(ex);
 		l.buildTrades(curr);
