@@ -93,8 +93,8 @@ public class Ledger implements Serializable {
 		return items.addAll(l.items);
 	}
 	
-	public void updateLedger(Exchange ex) throws IOException,ExchangeException,InterruptedException {
-		mergeLedgers(ex.getLedger("trade",String.valueOf(last.getTime()/1000),0));
+	public boolean updateLedger(Exchange ex) throws IOException,ExchangeException,InterruptedException {
+		return mergeLedgers(ex.getLedger("trade",String.valueOf(last.getTime()/1000),0));
 	}
 	
 	public LedgerItem lastTrade(String coin) {

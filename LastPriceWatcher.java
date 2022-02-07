@@ -43,13 +43,17 @@ public class LastPriceWatcher extends PriceWatcher {
 		
 		if (orderPrice.compareTo(avg) == avggtlt || priceDif(avg,orderPrice).compareTo(minratio) == -1) return last;
 		
-		BigDecimal qty,dif = priceDif(last,orderPrice);
+		BigDecimal qty,dif;
 		
-		if (avggtlt == -1)
+		if (avggtlt == -1) { // UP
+			dif = priceDif(last.max(avg),orderPrice);
 			qty = coinBal.multiply(dif.multiply(traderatio).min(maxratio)).min(orderQty);
-		else
+		}
+		else { // DOWN
+			dif = priceDif(last.min(avg),orderPrice);
 			qty = currBal.multiply(dif.multiply(traderatio).min(maxratio)).divide(orderPrice,scale,rm).min(orderQty);
-		
+		}
+			
 		if (qty.compareTo(minOrder) == -1) return last;
 		
 		System.out.print(new Date() + updown + dif.floatValue()*100 + "% $" + orderPrice);
