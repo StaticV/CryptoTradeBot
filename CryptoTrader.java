@@ -50,6 +50,7 @@ public class CryptoTrader {
 			l = Ledger.readFromFile(f);
 			l.updateLedger(ex);
 			l.buildTrades(currency);
+			l.checkDuplicates();
 		}
 		else {
 			l = new Ledger(ex,"trade",p.getProperty("first"),Integer.parseInt(p.getProperty("pages","10")),f);

@@ -74,6 +74,16 @@ public class Ledger implements Serializable {
 		items.trimToSize();
 	}
 	
+	public void checkDuplicates() {
+		for (Iterator<LedgerItem> it = items.iterator();it.hasNext();) {
+			LedgerItem cur = it.next();
+			
+			for (LedgerItem curPair : items)
+				if (cur.refid == curPair.refid && !cur.equals(curPair))
+					it.remove();
+		}
+	}
+	
 	public BigDecimal avgPrice(String coin) {
 		BigDecimal result = new BigDecimal("0.00");
 		BigDecimal qty = new BigDecimal("0.00");
@@ -119,5 +129,24 @@ public class Ledger implements Serializable {
 		in.close();
 		l.f = f;
 		return l;
+	}
+	
+	public String toString() {
+		String result = "";
+		
+		for (LedgerItem cur : items)
+			result += cur+"\n";
+		
+		return result;
+	}
+	
+	public static void main(String[] args) {
+		try {
+			Ledger l = readFromFile(new File(args[0]));
+			
+			System.out.println(l);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

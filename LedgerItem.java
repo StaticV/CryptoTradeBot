@@ -49,4 +49,8 @@ public class LedgerItem implements Serializable {
 		}
 		else return false;
 	}
+	
+	public String toString() {
+		return refid+" "+time+" "+asset+" "+amount+" "+pair.asset+" "+pair.amount;
+	}
 }
