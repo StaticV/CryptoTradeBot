@@ -3,6 +3,8 @@ package CryptoExchange;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
@@ -26,6 +28,21 @@ public class LedgerItem implements Serializable {
 		amount = Json.getBigDecimal(jo,"amount");
 		fee = Json.getBigDecimal(jo,"fee");
 		balance = Json.getBigDecimal(jo,"balance");
+		pair = null;
+	}
+	
+	public LedgerItem(String[] strings) throws ParseException {
+		SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		refid = strings[1].substring(1,strings[1].length()-1);
+		type = strings[3].substring(1,strings[3].length()-1);
+		subtype = strings[4].substring(1,strings[4].length()-1);
+		aclass = strings[5].substring(1,strings[5].length()-1);
+		asset = strings[6].substring(1,strings[6].length()-1);
+		time = sd.parse(strings[2].substring(1,strings[2].length()-1));
+		amount = new BigDecimal(strings[7]);
+		fee = new BigDecimal(strings[8]);
+		balance = new BigDecimal(strings[9]);
 		pair = null;
 	}
 	

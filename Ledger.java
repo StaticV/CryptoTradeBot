@@ -1,14 +1,17 @@
 package CryptoExchange;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -19,7 +22,7 @@ public class Ledger implements Serializable {
 	public static final long serialVersionUID = 1;
 
 	public ArrayList<LedgerItem> items;
-	protected File f;
+	public File f;
 	public Date last;
 	
 	
@@ -53,6 +56,26 @@ public class Ledger implements Serializable {
 			if (l.items.isEmpty()) break;
 			else mergeLedgers(l);
 		}
+	}
+	
+	public Ledger(File f) throws IOException,ParseException {
+		this(ipg);
+		
+		BufferedReader in = new BufferedReader(new FileReader(f));
+		String line = in.readLine();
+		
+		while ((line = in.readLine()) != null) {
+			String[] item = line.split(",");
+			if (item[3].equals("\"trade\"")) { 
+				LedgerItem li = new LedgerItem(item);
+				if (li.time.after(last))
+					last = li.time;
+				items.add(li);
+			}
+				
+		}
+		
+		in.close();
 	}
 	
 	public void buildTrades(String asset) {

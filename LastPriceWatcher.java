@@ -61,6 +61,7 @@ public class LastPriceWatcher extends PriceWatcher {
 		
 		l.updateLedger(ex);
 		l.buildTrades(curr);
+		l.checkDuplicates();
 		l.writeToFile();
 		
 		System.out.println(" New Average Price: "+l.avgPrice(coin));

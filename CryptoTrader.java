@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Properties;
@@ -39,13 +40,13 @@ public class CryptoTrader {
 		}
 	}
 	
-	public CryptoTrader(Properties p) throws IOException, ExchangeException,InterruptedException,ClassNotFoundException  {
+	public CryptoTrader(Properties p) throws IOException, ExchangeException,InterruptedException,ClassNotFoundException,ParseException {
 		if (p.getProperty("exchange").equalsIgnoreCase("kraken"))
 			ex = new KrakenExchange(p.getProperty("apikey"),p.getProperty("privkey"));
 		
 		String currency = p.getProperty("currency");
 		
-		File f = new File(p.getProperty("ledger"),"ledger.ser");
+		File f = new File(p.getProperty("ledger"),"ledgers.ser");
 		if (f.exists()) {
 			l = Ledger.readFromFile(f);
 			l.updateLedger(ex);
@@ -53,9 +54,20 @@ public class CryptoTrader {
 			l.checkDuplicates();
 		}
 		else {
-			l = new Ledger(ex,"trade",p.getProperty("first"),Integer.parseInt(p.getProperty("pages","10")),f);
-			l.buildTrades(currency);
-			l.writeToFile();
+			File csv = new File(p.getProperty("export"),"ledgers.csv");
+			if (csv.exists()) {
+				l = new Ledger(csv);
+				l.updateLedger(ex);
+				l.buildTrades(currency);
+				l.checkDuplicates();
+				l.f = f;
+				l.writeToFile();
+				
+			} else {
+				l = new Ledger(ex,"trade",p.getProperty("first"),Integer.parseInt(p.getProperty("pages","10")),f);
+				l.buildTrades(currency);
+				l.writeToFile();
+			}
 		}
 		
 		trackers = new ArrayList<Tracker>();
