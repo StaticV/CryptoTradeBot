@@ -4,8 +4,9 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 
 public class LedgerItem implements Serializable {
@@ -13,9 +14,9 @@ public class LedgerItem implements Serializable {
 	public static final long serialVersionUID = 1;
 
 	public String refid,type,subtype,aclass,asset;
-	public Date time;
+	public Instant time;
 	public BigDecimal amount,fee, balance;
-	public LedgerItem pair;
+	public LedgerItem pair = null;
 	
 	
 	public LedgerItem(Object jo) {
@@ -24,30 +25,28 @@ public class LedgerItem implements Serializable {
 		subtype = Json.getString(jo,"subtype");
 		aclass = Json.getString(jo,"aclass");
 		asset = Json.getString(jo,"asset");
-		time = new Date(Json.getLong(jo,"time")*1000);
+		time = Instant.ofEpochSecond(Json.getLong(jo,"time"));
 		amount = Json.getBigDecimal(jo,"amount");
 		fee = Json.getBigDecimal(jo,"fee");
 		balance = Json.getBigDecimal(jo,"balance");
-		pair = null;
 	}
 	
 	public LedgerItem(String[] strings) throws ParseException {
-		SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("UTC"));
 		
 		refid = strings[1].substring(1,strings[1].length()-1);
 		type = strings[3].substring(1,strings[3].length()-1);
 		subtype = strings[4].substring(1,strings[4].length()-1);
 		aclass = strings[5].substring(1,strings[5].length()-1);
 		asset = strings[6].substring(1,strings[6].length()-1);
-		time = sd.parse(strings[2].substring(1,strings[2].length()-1));
+		time = Instant.from(formatter.parse(strings[2].substring(1,strings[2].length()-1)));
 		amount = new BigDecimal(strings[7]);
 		fee = new BigDecimal(strings[8]);
 		balance = new BigDecimal(strings[9]);
-		pair = null;
 	}
 	
 	public LedgerItem() {
-		time = new Date(0);
+		time = Instant.MIN;
 	}
 	
 	public BigDecimal price() {
@@ -68,6 +67,8 @@ public class LedgerItem implements Serializable {
 	}
 	
 	public String toString() {
-		return refid+" "+time+" "+asset+" "+amount+" "+pair.asset+" "+pair.amount;
+		String r = refid+" "+time+" "+asset+" "+amount;
+		if (pair != null) r += " "+pair.asset+" "+pair.amount;
+		return r;
 	}
 }

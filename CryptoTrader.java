@@ -40,7 +40,7 @@ public class CryptoTrader {
 		}
 	}
 	
-	public CryptoTrader(Properties p) throws IOException, ExchangeException,InterruptedException,ClassNotFoundException,ParseException {
+	public CryptoTrader(Properties p) throws IOException,ExchangeException,InterruptedException,ClassNotFoundException,ParseException {
 		if (p.getProperty("exchange").equalsIgnoreCase("kraken"))
 			ex = new KrakenExchange(p.getProperty("apikey"),p.getProperty("privkey"));
 		
@@ -51,18 +51,14 @@ public class CryptoTrader {
 			l = Ledger.readFromFile(f);
 			l.updateLedger(ex);
 			l.buildTrades(currency);
-			l.checkDuplicates();
-		}
-		else {
+		} else {
 			File csv = new File(p.getProperty("export"),"ledgers.csv");
 			if (csv.exists()) {
 				l = new Ledger(csv);
 				l.updateLedger(ex);
 				l.buildTrades(currency);
-				l.checkDuplicates();
 				l.f = f;
 				l.writeToFile();
-				
 			} else {
 				l = new Ledger(ex,"trade",p.getProperty("first"),Integer.parseInt(p.getProperty("pages","10")),f);
 				l.buildTrades(currency);

@@ -12,9 +12,10 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.ParseException;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
+
 
 public class Ledger implements Serializable {
 	
@@ -23,12 +24,12 @@ public class Ledger implements Serializable {
 
 	public ArrayList<LedgerItem> items;
 	public File f;
-	public Date last;
+	public Instant last;
 	
 	
 	protected Ledger(int capacity) {
 		items = new ArrayList<LedgerItem>(capacity);
-		last = new Date(0);
+		last = Instant.MIN;
 	}
 	
 	protected Ledger(Iterator<Object> it) {
@@ -37,7 +38,7 @@ public class Ledger implements Serializable {
 		while (it.hasNext()) {
 			LedgerItem l = new LedgerItem(it.next());
 			items.add(l);
-			if (l.time.after(last)) last = l.time;
+			if (l.time.isAfter(last)) last = l.time;
 		}
 	}
 	
@@ -68,7 +69,7 @@ public class Ledger implements Serializable {
 			String[] item = line.split(",");
 			if (item[3].equals("\"trade\"")) { 
 				LedgerItem li = new LedgerItem(item);
-				if (li.time.after(last))
+				if (li.time.isAfter(last))
 					last = li.time;
 				items.add(li);
 			}
@@ -78,7 +79,7 @@ public class Ledger implements Serializable {
 		in.close();
 	}
 	
-	public void buildTrades(String asset) {
+	public synchronized void buildTrades(String asset) {
 		for (Iterator<LedgerItem> it = items.iterator();it.hasNext();) {
 			LedgerItem cur = it.next();
 			
@@ -97,16 +98,6 @@ public class Ledger implements Serializable {
 		items.trimToSize();
 	}
 	
-	public void checkDuplicates() {
-		for (Iterator<LedgerItem> it = items.iterator();it.hasNext();) {
-			LedgerItem cur = it.next();
-			
-			for (LedgerItem curPair : items)
-				if (cur.refid == curPair.refid && !cur.equals(curPair))
-					it.remove();
-		}
-	}
-	
 	public BigDecimal avgPrice(String coin) {
 		BigDecimal result = new BigDecimal("0.00");
 		BigDecimal qty = new BigDecimal("0.00");
@@ -120,21 +111,21 @@ public class Ledger implements Serializable {
 		return result.divide(qty,RoundingMode.HALF_EVEN).abs();
 	}
 	
-	public boolean mergeLedgers(Ledger l) {
-		if (last.before(l.last)) last = l.last;
+	public synchronized void mergeLedgers(Ledger l) {
+		if (last.isBefore(l.last)) last = l.last;
 		
-		return items.addAll(l.items);
+		items.addAll(l.items);
 	}
 	
-	public boolean updateLedger(Exchange ex) throws IOException,ExchangeException,InterruptedException {
-		return mergeLedgers(ex.getLedger("trade",String.valueOf(last.getTime()/1000),0));
+	public void updateLedger(Exchange ex) throws IOException,ExchangeException,InterruptedException {
+		mergeLedgers(ex.getLedger("trade",String.valueOf(last.toEpochMilli()/1000),0));
 	}
 	
 	public LedgerItem lastTrade(String coin) {
 		LedgerItem result = new LedgerItem();
 		
 		for (LedgerItem cur : items)
-			if (cur.pair.asset.equals(coin) && cur.time.after(result.time))
+			if (cur.pair.asset.equals(coin) && cur.time.isAfter(result.time))
 				result = cur;
 		
 		return result;
