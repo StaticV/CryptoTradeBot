@@ -111,14 +111,23 @@ public class Ledger implements Serializable {
 		return result.divide(qty,RoundingMode.HALF_EVEN).abs();
 	}
 	
-	public synchronized void mergeLedgers(Ledger l) {
+	public synchronized boolean mergeLedgers(Ledger l) {
 		if (last.isBefore(l.last)) last = l.last;
 		
-		items.addAll(l.items);
+		for (LedgerItem cur : items) {
+			for (Iterator<LedgerItem> it = l.items.iterator();it.hasNext();) {
+				LedgerItem i = it.next();
+				
+				if (i.refid.equals(cur.refid))
+					it.remove();
+			}
+		}
+		
+		return items.addAll(l.items);
 	}
 	
-	public void updateLedger(Exchange ex) throws IOException,ExchangeException,InterruptedException {
-		mergeLedgers(ex.getLedger("trade",String.valueOf(last.toEpochMilli()/1000),0));
+	public boolean updateLedger(Exchange ex) throws IOException,ExchangeException,InterruptedException {
+		return mergeLedgers(ex.getLedger("trade",String.valueOf(last.toEpochMilli()/1000),0));
 	}
 	
 	public LedgerItem lastTrade(String coin) {
