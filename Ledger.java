@@ -123,7 +123,7 @@ public class Ledger implements Serializable {
 	}
 	
 	public boolean updateLedger(Exchange ex) throws IOException,ExchangeException,InterruptedException {
-		return mergeLedgers(ex.getLedger("trade",String.valueOf(last.toEpochMilli()/1000),0));
+		return mergeLedgers(ex.getLedger("trade",String.valueOf(last.getEpochSecond()),0));
 	}
 	
 	public LedgerItem lastTrade(String coin) {
