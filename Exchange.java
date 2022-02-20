@@ -2,7 +2,6 @@ package CryptoExchange;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.time.Instant;
 
 public interface Exchange {
@@ -31,5 +30,5 @@ public interface Exchange {
 	
 	public abstract LedgerItem buildLedgerItem(Object o);
 	
-	public abstract LedgerItem buildLedgerItem(String[] strings) throws ParseException ;
+	public abstract LedgerItem buildLedgerItem(String[] strings);
 }

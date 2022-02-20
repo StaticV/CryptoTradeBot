@@ -42,7 +42,7 @@ public class Ledger implements Serializable {
 		}
 	}
 	
-	public Ledger(Exchange ex, String type, String first,int pages,File f) throws IOException,ExchangeException,InterruptedException {
+	public Ledger(Exchange ex,String type,String first,int pages,File f) throws IOException,ExchangeException,InterruptedException {
 		this(ipg*pages);
 		
 		this.f = f;

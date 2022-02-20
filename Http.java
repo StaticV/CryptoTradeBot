@@ -9,15 +9,15 @@ import java.net.http.HttpResponse.BodyHandlers;
 
 public class Http {
 	
-	public static String getData (String url) throws IOException, URISyntaxException, InterruptedException {
+	public static String getData(String url) throws IOException,URISyntaxException,InterruptedException {
 		return request(HttpRequest.newBuilder(new URI(url)).GET().build());
 	}
 	
-	public static String postData (String[] headers, String data, String url) throws IOException, URISyntaxException, InterruptedException {
+	public static String postData(String[] headers,String data,String url) throws IOException,URISyntaxException,InterruptedException {
 		return request(HttpRequest.newBuilder(new URI(url)).headers(headers).POST(HttpRequest.BodyPublishers.ofString(data)).build());
 	}
 	
-	protected static String request(HttpRequest request) throws IOException, InterruptedException {
+	protected static String request(HttpRequest request) throws IOException,InterruptedException {
 		return HttpClient.newHttpClient().send(request,BodyHandlers.ofString()).body();
 	}
 }

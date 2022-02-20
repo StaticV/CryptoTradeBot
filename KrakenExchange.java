@@ -6,7 +6,6 @@ import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
-import java.text.ParseException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -207,7 +206,7 @@ public class KrakenExchange implements Exchange {
 		return new LedgerItem(refid,type,subtype,aclass,asset,time,amount,fee,balance);
 	}
 	
-	public LedgerItem buildLedgerItem(String[] strings) throws ParseException {
+	public LedgerItem buildLedgerItem(String[] strings) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("UTC"));
 		
 		String refid = strings[1].substring(1,strings[1].length()-1);
