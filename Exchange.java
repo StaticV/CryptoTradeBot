@@ -3,11 +3,11 @@ package CryptoExchange;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.util.Date;
+import java.time.Instant;
 
 public interface Exchange {
 	
-	public abstract Date getTime() throws IOException, ExchangeException, InterruptedException;
+	public abstract Instant getTime() throws IOException, ExchangeException, InterruptedException;
 	
 	public abstract String getPrices(String coin, String currency) throws IOException, ExchangeException, InterruptedException;
 	

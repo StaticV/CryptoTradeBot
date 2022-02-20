@@ -11,7 +11,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
-import java.util.Date;
 
 
 public class KrakenExchange implements Exchange {
@@ -100,10 +99,10 @@ public class KrakenExchange implements Exchange {
 		return postData(header,"nonce="+nonce+payload,path);
 	}
 	
-	public Date getTime() throws IOException, ExchangeException, InterruptedException {
+	public Instant getTime() throws IOException, ExchangeException, InterruptedException {
 		String[] keys = {JSONKey,"unixtime"};
 		
-		return new Date(1000*Long.parseUnsignedLong(getJSONString(getData(pubUrl+"Time"),keys)));
+		return Instant.ofEpochSecond(Long.parseUnsignedLong(getJSONString(getData(pubUrl+"Time"),keys)));
 	}
 	
 	public String getPrices(String coin, String currency) throws IOException, ExchangeException, InterruptedException {
