@@ -32,18 +32,14 @@ public class Ledger implements Serializable {
 		last = Instant.MIN;
 	}
 	
-	protected Ledger(Iterator<Object> it) {
+	public Ledger(Iterator<Object> it,Exchange ex) {
 		this(ipg);
 		
 		while (it.hasNext()) {
-			LedgerItem l = new LedgerItem(it.next());
+			LedgerItem l = ex.buildLedgerItem(it.next());
 			items.add(l);
 			if (l.time.isAfter(last)) last = l.time;
 		}
-	}
-	
-	public Ledger(String json) {
-		this(Json.getJSONArray(json));
 	}
 	
 	public Ledger(Exchange ex, String type, String first,int pages,File f) throws IOException,ExchangeException,InterruptedException {
@@ -59,7 +55,7 @@ public class Ledger implements Serializable {
 		}
 	}
 	
-	public Ledger(File f) throws IOException,ParseException {
+	public Ledger(File f,Exchange ex) throws IOException,ParseException {
 		this(ipg);
 		
 		BufferedReader in = new BufferedReader(new FileReader(f));
@@ -68,7 +64,7 @@ public class Ledger implements Serializable {
 		while ((line = in.readLine()) != null) {
 			String[] item = line.split(",");
 			if (item[3].equals("\"trade\"")) { 
-				LedgerItem li = new LedgerItem(item);
+				LedgerItem li = ex.buildLedgerItem(item);
 				if (li.time.isAfter(last))
 					last = li.time;
 				items.add(li);

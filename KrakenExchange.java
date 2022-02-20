@@ -6,6 +6,10 @@ import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
+import java.text.ParseException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.Date;
 
@@ -187,6 +191,36 @@ public class KrakenExchange implements Exchange {
 		if (start != null) payload += "&start="+start;
 		if (offset > 1) payload += "&ofs="+offset;
 		
-		return new Ledger(getJSONString(signedRequest(privUrl + "Ledgers",payload),keys));
+		return new Ledger(Json.getJSONArray(getJSONString(signedRequest(privUrl + "Ledgers",payload),keys)),this);
+	}
+	
+	public LedgerItem buildLedgerItem(Object o) {
+		String refid = Json.getString(o,"refid");
+		String type = Json.getString(o,"type");
+		String subtype = Json.getString(o,"subtype");
+		String aclass = Json.getString(o,"aclass");
+		String asset = Json.getString(o,"asset");
+		Instant time = Instant.ofEpochSecond(Json.getLong(o,"time"));
+		BigDecimal amount = Json.getBigDecimal(o,"amount");
+		BigDecimal fee = Json.getBigDecimal(o,"fee");
+		BigDecimal balance = Json.getBigDecimal(o,"balance");
+		
+		return new LedgerItem(refid,type,subtype,aclass,asset,time,amount,fee,balance);
+	}
+	
+	public LedgerItem buildLedgerItem(String[] strings) throws ParseException {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("UTC"));
+		
+		String refid = strings[1].substring(1,strings[1].length()-1);
+		String type = strings[3].substring(1,strings[3].length()-1);
+		String subtype = strings[4].substring(1,strings[4].length()-1);
+		String aclass = strings[5].substring(1,strings[5].length()-1);
+		String asset = strings[6].substring(1,strings[6].length()-1);
+		Instant time = Instant.from(formatter.parse(strings[2].substring(1,strings[2].length()-1)));
+		BigDecimal amount = new BigDecimal(strings[7]);
+		BigDecimal fee = new BigDecimal(strings[8]);
+		BigDecimal balance = new BigDecimal(strings[9]);
+		
+		return new LedgerItem(refid,type,subtype,aclass,asset,time,amount,fee,balance);
 	}
 }

@@ -2,6 +2,7 @@ package CryptoExchange;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.Date;
 
 public interface Exchange {
@@ -27,4 +28,8 @@ public interface Exchange {
 	public abstract Order[] getOrders(String coin, String currency) throws IOException, ExchangeException, InterruptedException;
 	
 	public abstract Ledger getLedger(String type,String start,int offset) throws IOException, ExchangeException, InterruptedException;
+	
+	public abstract LedgerItem buildLedgerItem(Object o);
+	
+	public abstract LedgerItem buildLedgerItem(String[] strings) throws ParseException ;
 }
