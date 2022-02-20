@@ -15,6 +15,7 @@ public class LedgerItem implements Serializable {
 	public BigDecimal amount,fee,balance;
 	public LedgerItem pair = null;
 	
+	
 	public LedgerItem(String refid,String type,String subtype,String aclass,String asset,Instant time,BigDecimal amount,BigDecimal fee,BigDecimal balance) {
 		this.refid = refid;
 		this.type = type;

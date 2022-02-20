@@ -17,7 +17,7 @@ public class LastPriceWatcher extends PriceWatcher {
 	protected String coin,curr;
 	
 	
-	public LastPriceWatcher(Ledger l,Exchange ex,Boolean test,BigDecimal maxratio,BigDecimal minratio, BigDecimal traderatio,BigDecimal minOrder,String coin,String curr) 
+	public LastPriceWatcher(Ledger l,Exchange ex,Boolean test,BigDecimal maxratio,BigDecimal minratio,BigDecimal traderatio,String coin,String curr) 
 			throws IOException,ExchangeException,InterruptedException {
 		this.l = l;
 		this.ex = ex;
@@ -25,7 +25,7 @@ public class LastPriceWatcher extends PriceWatcher {
 		this.maxratio = maxratio;
 		this.minratio = minratio;
 		this.traderatio = traderatio;
-		this.minOrder = minOrder;
+		minOrder = ex.getMinOrder(coin,curr);
 		this.coin = coin;
 		this.curr = curr;
 		updateBalance();
