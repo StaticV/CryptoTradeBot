@@ -58,12 +58,11 @@ public class LedgerItem implements Serializable {
 	}
 	
 	public boolean pair(LedgerItem l) {
-		if (arePair(l)) {
-			pair = l;
-			l.pair = this;
-			return true;
-		}
-		else return false;
+		if (!arePair(l)) return false;
+		
+		pair = l;
+		l.pair = this;
+		return true;
 	}
 	
 	public String toString() {
