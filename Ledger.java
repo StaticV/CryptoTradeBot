@@ -94,7 +94,7 @@ public class Ledger implements Serializable {
 		items.trimToSize();
 	}
 	
-	public BigDecimal avgPrice(String coin) {
+	public synchronized BigDecimal avgPrice(String coin) {
 		BigDecimal result = new BigDecimal("0.00");
 		BigDecimal qty = new BigDecimal("0.00");
 		

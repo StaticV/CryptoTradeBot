@@ -15,7 +15,6 @@ import CryptoExchange.KrakenExchange;
 import CryptoExchange.Ledger;
 import CryptoExchange.LedgerItem;
 
-
 public class CryptoTrader {
 	
 	protected ArrayList<Tracker> trackers;
@@ -30,10 +29,11 @@ public class CryptoTrader {
 				p.load(new FileReader(arg));
 				CryptoTrader ct = new CryptoTrader(p);
 				
+				System.gc();
+				
 				String coin = ct.l.items.get(0).pair.asset;
 				LedgerItem last = ct.l.lastTrade(coin);
-				System.out.println(new Date()+" Last Trade: "+last.time+" $"+last.price()+" Average $"+ct.l.avgPrice(coin));
-				System.gc();
+				System.out.println(new Date()+" Last Trade: "+last.time+" $"+last.price()+" Average $"+ct.l.avgPrice(coin)+" Profit: $"+profit(ct.l,coin));
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
@@ -88,5 +88,27 @@ public class CryptoTrader {
 							)
 					)
 			);
+	}
+	
+	public static BigDecimal profit(Ledger l,String coin) {
+		BigDecimal buyQty = new BigDecimal(0);
+		BigDecimal buyAmount = new BigDecimal(0);
+		BigDecimal sellQty = new BigDecimal(0);
+		BigDecimal sellAmount = new BigDecimal(0);
+		
+		for (LedgerItem cur : l.items) {
+			if (cur.amount.compareTo(BigDecimal.ZERO) == -1) {
+				buyQty = buyQty.add(cur.pair.amount);
+				buyAmount = buyAmount.add(cur.amount);
+			} else {
+				sellQty = sellQty.add(cur.pair.amount);
+				sellAmount = sellAmount.add(cur.amount);
+			}
+		}
+		
+		BigDecimal netAmount = buyAmount.add(sellAmount);
+		//BigDecimal netQty = buyQty.add(sellQty);
+		
+		return new BigDecimal(3100).subtract(l.lastTrade(coin).balance).add(netAmount);
 	}
 }

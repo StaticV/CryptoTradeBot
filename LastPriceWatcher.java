@@ -56,7 +56,7 @@ public class LastPriceWatcher extends PriceWatcher {
 			
 		if (qty.compareTo(minOrder) == -1) return last;
 		
-		String order =  ex.orderMarketPrice(buy,coin,curr,qty.toPlainString(),test);
+		String order = ex.orderMarketPrice(buy,coin,curr,qty.toPlainString(),test);
 		System.out.print(new Date() + updown + dif.floatValue()*100 + "% $" + orderPrice+" "+order);
 		
 		l.updateLedger(ex);
