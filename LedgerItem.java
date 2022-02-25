@@ -50,7 +50,7 @@ public class LedgerItem implements Serializable {
 	
 	public String toString() {
 		String r = refid+" "+time+" "+asset+" "+amount;
-		if (pair != null) r += " "+pair.asset+" "+pair.amount;
+		if (pair != null) r += " "+pair.asset+" "+pair.amount+" price "+price();
 		return r;
 	}
 }

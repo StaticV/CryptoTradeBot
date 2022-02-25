@@ -107,8 +107,8 @@ public class CryptoTrader {
 		}
 		
 		BigDecimal netAmount = buyAmount.add(sellAmount);
-		//BigDecimal netQty = buyQty.add(sellQty);
+		BigDecimal netQty = buyQty.add(sellQty);
 		
-		return new BigDecimal(3100).subtract(l.lastTrade(coin).balance).add(netAmount);
+		return netAmount.multiply(netQty).negate();
 	}
 }

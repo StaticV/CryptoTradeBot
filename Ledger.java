@@ -16,7 +16,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-
 public class Ledger implements Serializable {
 	
 	public static final int ipg = 50;
