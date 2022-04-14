@@ -51,6 +51,8 @@ public class CryptoTrader {
 			l = Ledger.readFromFile(f);
 			l.updateLedger(ex);
 			l.buildTrades(currency);
+			l.f = f;
+			l.writeToFile();
 		} else {
 			File csv = new File(p.getProperty("export"),"ledgers.csv");
 			if (csv.exists()) {

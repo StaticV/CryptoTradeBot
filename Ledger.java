@@ -68,9 +68,7 @@ public class Ledger implements Serializable {
 					last = li.time;
 				items.add(li);
 			}
-				
 		}
-		
 		in.close();
 	}
 	
