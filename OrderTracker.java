@@ -2,6 +2,7 @@ package CryptoTrader;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Date;
 
 import CryptoExchange.Exchange;
 import CryptoExchange.ExchangeException;
@@ -14,7 +15,8 @@ public class OrderTracker extends Tracker {
 	public BigDecimal lastPrice;
 	protected PriceWatcher pw;
 	
-	public OrderTracker(Exchange ex, String coin, String currency,BigDecimal lastPrice, int interval, boolean start, PriceWatcher pw) {
+	
+	public OrderTracker(Exchange ex,String coin,String currency,BigDecimal lastPrice,int interval,boolean start,PriceWatcher pw) {
 		this.coin = coin;
 		this.currency = currency;
 		this.lastPrice = lastPrice;
@@ -27,15 +29,16 @@ public class OrderTracker extends Tracker {
 	
 	public boolean checkPrice() throws InterruptedException {
 		try {
-			Order[] orders = ex.getOrders(coin, currency);
+			Order[] orders = ex.getOrders(coin,currency);
 			if (lastPrice.compareTo(orders[0].price) == 1) lastPrice = pw.coinDown(lastPrice,orders[0].price,orders[0].qty);
 			else if (lastPrice.compareTo(orders[1].price) == -1) lastPrice = pw.coinUp(lastPrice,orders[1].price,orders[1].qty);
 		} catch(IOException e) {
-			System.out.println(e);
+			System.err.println(new Date() + " " + e);
 		} catch(ExchangeException e) {
-			System.out.println(e);
+			System.err.println(new Date() + " " + e);
 		} catch(Exception e) {
-			System.err.println(e);
+			System.err.print(new Date() + " ");
+			e.printStackTrace();
 			return false;
 		}
 		return true;

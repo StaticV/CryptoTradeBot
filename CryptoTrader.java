@@ -35,6 +35,7 @@ public class CryptoTrader {
 				LedgerItem last = ct.l.lastTrade(coin);
 				System.out.println(new Date()+" Last Trade: "+last.time+" $"+last.price()+" Average $"+ct.l.avgPrice(coin)+" Profit: $"+profit(ct.l,coin));
 			} catch(Exception e) {
+				System.err.print(new Date() + " ");
 				e.printStackTrace();
 			}
 		}

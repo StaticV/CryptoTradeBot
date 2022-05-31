@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
 
-
 public class LedgerItem implements Serializable {
 	
 	public static final long serialVersionUID = 1;
