@@ -1,0 +1,10 @@
+#
+#Thu Dec 30 10:14:30 EST 2021
+exchange=kraken
+apikey=Uu0YOlzV3N6VHrju2gLSBU9H8U9NBue7MVuoYX3avhEoiFqKeLBeY6JV
+privkey=veTbackwdig+kfBoe4oss78o/888gAeMfJ8uoj0rUx2e4rnJaedm1rh2vGa907USYNSJQ4qrV5C2UYVMJLW8jQ==
+currency=ZCAD
+coins=XXBT
+test=false
+traderatio=10
+pages=1
