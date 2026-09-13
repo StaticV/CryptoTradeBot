@@ -21,25 +21,24 @@ public class CryptoTrader {
 	protected Exchange ex;
 	protected Ledger l;
 
-
 	public static void main(String[] args) {
-		for (String arg : args) {
-			try {
-				Properties p = new Properties();
-				p.load(new FileReader(arg));
-				CryptoTrader ct = new CryptoTrader(p);
-				
-				System.gc();
-				
-				String coin = ct.l.items.get(0).pair.asset;
-				LedgerItem last = ct.l.lastTrade(coin);
-				System.out.println(new Date()+" Last Trade: "+last.time+" $"+last.price()+" Average $"+ct.l.avgPrice(coin)+" Profit: $"+profit(ct.l,coin));
-			} catch(Exception e) {
-				System.err.print(new Date() + " ");
-				e.printStackTrace();
-			}
-		}
-	}
+        for (String arg : args) {
+            try (FileReader reader = new FileReader(arg)) {
+                Properties p = new Properties();
+                p.load(reader);
+
+                CryptoTrader ct = new CryptoTrader(p);
+                String coin = ct.l.items.get(0).pair.asset;
+                LedgerItem last = ct.l.lastTrade(coin);
+
+                System.out.printf("%s Last Trade: %s $%s Average $%s Profit: $%s%n",
+                        new Date(), last.time, last.price(), ct.l.avgPrice(coin), profit(ct.l, coin));
+            } catch (Exception e) {
+                System.err.println(new Date() + " Error processing file: " + arg);
+                e.printStackTrace();
+            }
+        }
+    }
 	
 	public CryptoTrader(Properties p) throws IOException,ExchangeException,InterruptedException,ClassNotFoundException,ParseException {
 		if (p.getProperty("exchange").equalsIgnoreCase("kraken"))
