@@ -34,7 +34,7 @@ public class CryptoTrader {
                 System.out.printf("%s Last Trade: %s $%s Average $%s Profit: $%s%n",
                         new Date(), last.time, last.price(), ct.l.avgPrice(coin), profit(ct.l, coin));
             } catch (Exception e) {
-                System.err.println(new Date() + " Error processing file: " + arg);
+                System.err.print(new Date() + " ");
                 e.printStackTrace();
             }
         }
