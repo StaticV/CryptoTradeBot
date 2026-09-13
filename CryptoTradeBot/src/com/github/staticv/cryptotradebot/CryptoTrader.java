@@ -93,25 +93,15 @@ public class CryptoTrader {
 			);
 	}
 	
-	public static BigDecimal profit(Ledger l,String coin) {
-		BigDecimal buyQty = new BigDecimal(0);
-		BigDecimal buyAmount = new BigDecimal(0);
-		BigDecimal sellQty = new BigDecimal(0);
-		BigDecimal sellAmount = new BigDecimal(0);
-		
-		for (LedgerItem cur : l.items) {
-			if (cur.amount.compareTo(BigDecimal.ZERO) == -1) {
-				buyQty = buyQty.add(cur.pair.amount);
-				buyAmount = buyAmount.add(cur.amount);
-			} else {
-				sellQty = sellQty.add(cur.pair.amount);
-				sellAmount = sellAmount.add(cur.amount);
-			}
-		}
-		
-		BigDecimal netAmount = buyAmount.add(sellAmount);
-		BigDecimal netQty = buyQty.add(sellQty);
-		
-		return netAmount.multiply(netQty).negate();
-	}
+	public static BigDecimal profit(Ledger l, String coin) {
+        BigDecimal totalQty = l.items.stream()
+                .map(item -> item.pair.amount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal totalAmount = l.items.stream()
+                .map(item -> item.amount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return totalAmount.multiply(totalQty).negate();
+    }
 }
